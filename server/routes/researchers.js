@@ -70,7 +70,6 @@ const queryCreateResearcher = async (req, res, next) => {
         console.log(req.body);
         next()
     } catch (error) {
-        // Class already created 
         if (error.code === "23505" && error.detail.includes("already exists")) {
             let customErr = "Researcher already exist. Please input a new one.";
             error = customErr;
@@ -88,7 +87,7 @@ const sendPostResults = (req, res) => {
     res.json({
         status: 'Success',
         payload: researcher,
-        message: 'new researcher added to expedition',
+        message: 'new researcher added to expedition'
     });
 }
 

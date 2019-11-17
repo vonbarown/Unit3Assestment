@@ -56,7 +56,7 @@ const sendResults = (req, res) => {
 
 router.get('/:id', getSpeciesById, sendResults)
 
-//query to create new researcher
+//query to add new species
 const queryAddNewSpecies = async (req, res, next) => {
     let name = req.body.species_name;
     let mammal = req.body.is_mammal;
@@ -72,7 +72,6 @@ const queryAddNewSpecies = async (req, res, next) => {
         console.log(req.body);
         next()
     } catch (error) {
-        // Class already created 
         if (error.code === "23505" && error.detail.includes("already exists")) {
             let customErr = "Species already exist. Please input a new one.";
             error = customErr;
