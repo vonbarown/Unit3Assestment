@@ -8,7 +8,7 @@ CREATE DATABASE marine_biology_db;
 CREATE TABLE researchers
 (
     id SERIAL PRIMARY KEY,
-    researcher_name VARCHAR NOT NULL,
+    researcher_name VARCHAR NOT NULL UNIQUE,
     job_title VARCHAR NOT NULL
 );
 
