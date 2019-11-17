@@ -8,7 +8,17 @@ const {
 router.get('/', async (req, res) => {
     let sightings;
     try {
-        sightings = await db.any(`SELECT * FROM sightings`);
+        sightings = await db.any(`
+         SELECT
+         sightings.researcher_id, researchers.researcher_name, researchers.job_title,
+             sightings.species_id, species.species_name, species.is_mammal,
+             sightings.habitat_id, habitats.category
+         FROM
+         sightings
+         INNER JOIN researchers ON researchers.id = sightings.researcher_id
+         INNER JOIN species ON species.id = sightings.species_id
+         INNER JOIN habitats ON habitats.id = sightings.habitat_id
+        `);
         res.json({
             status: 'Success',
             message: 'retrieved all sightings',
@@ -55,6 +65,19 @@ const getSpeciesSightingsById = async (req, res, next) => {
         });
     }
 }
+const validateQuery = (req, res, next) => {
+    let data = req.sightings;
+
+    if (data.length === 0) {
+        res.json({
+            status: 'error',
+            message: 'no sightings recorded',
+            payload: null
+        })
+    } else {
+        next()
+    }
+}
 
 const sendResults = (req, res) => {
     let sighting = req.sightings;
@@ -66,7 +89,7 @@ const sendResults = (req, res) => {
 }
 
 //retrieving species sighting records by ids
-router.get('/species/:id', getSpeciesSightingsById, sendResults)
+router.get('/species/:id', getSpeciesSightingsById, validateQuery, sendResults)
 
 const getResearcherSightingsById = async (req, res, next) => {
     let id = req.params.id;
@@ -98,7 +121,7 @@ const getResearcherSightingsById = async (req, res, next) => {
     }
 }
 
-router.get('/researchers/:id', getResearcherSightingsById, sendResults);
+router.get('/researchers/:id', getResearcherSightingsById, validateQuery, sendResults);
 
 //get the 
 const getHabitatsSightingsById = async (req, res, next) => {
@@ -129,7 +152,7 @@ const getHabitatsSightingsById = async (req, res, next) => {
         });
     }
 }
-router.get('/habitats/:id', getHabitatsSightingsById, sendResults)
+router.get('/habitats/:id', getHabitatsSightingsById, validateQuery, sendResults)
 
 //query to record a new sighting
 const queryToRecordSighting = async (req, res, next) => {

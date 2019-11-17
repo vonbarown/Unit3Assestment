@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./frontEnd.js"></script>
+    <link rel="stylesheet" href="./frontEnd.css">
+    <title>Marine Biology</title>
+</head>
+
+<body>
+    <h1>Welcome To Vonbarown Marine Research Center</h1>
+    <label for="researcher">Enter Researcher's ID</label>
+    <div>
+        <input id="researcher" name='researcher' type="text" placeholder="Enter Researcher's ID" required>
+        <button id="click">Click</button>
+    </div>
+    <input id="switcher" type="checkbox" name="switch">
+    <label for="switch">check after entering researcher id</label>
+    <br>
+    <div id="container">
+        <div>Sightings Log</div>
+        <div id="allSightings"></div>
+    </div>
+
+</body>
+
+</html>
