@@ -29,7 +29,20 @@ router.get('/', async (req, res) => {
 const getSpeciesSightingsById = async (req, res, next) => {
     let id = req.params.id;
     try {
-        req.sightings = await db.one(`SELECT * FROM sightings  WHERE species_id = $/id/`, {
+        req.sightings = await db.any(`
+         SELECT
+         sightings.researcher_id, researchers.researcher_name, researchers.job_title,
+             sightings.species_id, species.species_name, species.is_mammal,
+             sightings.habitat_id, habitats.category
+         FROM
+         sightings
+         INNER JOIN researchers ON researchers.id = sightings.researcher_id
+         INNER JOIN species ON species.id = sightings.species_id
+         INNER JOIN habitats ON habitats.id = sightings.habitat_id
+
+         WHERE species.id = $/id/
+
+        `, {
             id
         });
         next()
@@ -58,7 +71,20 @@ router.get('/species/:id', getSpeciesSightingsById, sendResults)
 const getResearcherSightingsById = async (req, res, next) => {
     let id = req.params.id;
     try {
-        req.sightings = await db.one(`SELECT * FROM sightings WHERE researcher_id = $/id/`, {
+
+        req.sightings = await db.any(`
+        SELECT
+            sightings.researcher_id, researchers.researcher_name, researchers.job_title,
+            sightings.species_id, species.species_name,species.is_mammal,
+            sightings.habitat_id, habitats.category
+        FROM 
+            sightings
+        INNER JOIN researchers ON researchers.id = sightings.researcher_id
+        INNER JOIN species ON species.id = sightings.species_id
+        INNER JOIN habitats ON habitats.id = sightings.habitat_id
+
+        WHERE researchers.id = $/id/
+    `, {
             id
         });
         next()
@@ -78,7 +104,19 @@ router.get('/researchers/:id', getResearcherSightingsById, sendResults);
 const getHabitatsSightingsById = async (req, res, next) => {
     let id = req.params.id;
     try {
-        req.sightings = await db.one(`SELECT * FROM sightings  WHERE habitat_id = $/id/`, {
+        req.sightings = await db.any(`
+         SELECT
+         sightings.researcher_id, researchers.researcher_name, researchers.job_title,
+             sightings.species_id, species.species_name, species.is_mammal,
+             sightings.habitat_id, habitats.category
+         FROM
+         sightings
+         INNER JOIN researchers ON researchers.id = sightings.researcher_id
+         INNER JOIN species ON species.id = sightings.species_id
+         INNER JOIN habitats ON habitats.id = sightings.habitat_id
+
+         WHERE habitats.id = $/id/
+        `, {
             id
         });
         next()
@@ -93,16 +131,16 @@ const getHabitatsSightingsById = async (req, res, next) => {
 }
 router.get('/habitats/:id', getHabitatsSightingsById, sendResults)
 
-//query to create new researcher
+//query to record a new sighting
 const queryToRecordSighting = async (req, res, next) => {
-    let species_id = req.body.species_id;
-    let researcher_id = req.body.researcher_id;
-    let habitat_id = req.body.habitat_id;
+    let species_id = parseInt(req.body.species_id);
+    let researcher_id = parseInt(req.body.researcher_id);
+    let habitat_id = parseInt(req.body.habitat_id);
 
     try {
         let insertQuery = `
         INSERT INTO sightings(species_id, researcher_id, habitat_id)
-            VALUES($/name/, $/jobTitle/) RETURNING *`
+            VALUES($/species_id/ ,$/researcher_id/,$/habitat_id/) RETURNING * `
 
         req.newRecord = await db.one(insertQuery, {
             species_id,
@@ -117,7 +155,7 @@ const queryToRecordSighting = async (req, res, next) => {
             error = customErr;
             res.send({
                 status: 'error',
-                message: error
+                message: error,
                 payload: null
             })
         }
@@ -143,8 +181,9 @@ const updateSighting = async (req, res, next) => {
     let habitatId = req.body.habitat_id;
     let id = req.params.id;
     try {
-        req.updateSighting = await db.any(`UPDATE sightings SET species_id = $/speciesId/,
-         researcher_id = $/researcherId/,habitat_id = $/habitatID/ WHERE id = $/id/ RETURNING * `, {
+        req.updateSighting = await db.one(`UPDATE sightings SET researcher_id = $/researcherId/, species_id = $/speciesId/,
+         habitat_id = $/habitatId/
+         WHERE id = $/id/ RETURNING * `, {
             speciesId,
             researcherId,
             habitatId,
@@ -155,7 +194,7 @@ const updateSighting = async (req, res, next) => {
         res.status(404)
         res.json({
             status: 'error',
-            message: 'no sighting recorder',
+            message: 'no sighting recorded',
             payload: null
         });
         console.log(error);
@@ -179,7 +218,7 @@ router.patch('/:id/patch', updateSighting, sendPatchResults)
 const deleteSighting = async (req, res, next) => {
     let id = req.params.id;
     try {
-        req.removeRecord = await db.any(`DELETe FROM sightings WHERE id = $/id/  RETURNING *`, {
+        req.removeRecord = await db.one(`DELETE FROM sightings WHERE id = $/id/  RETURNING *`, {
             id
         });
         next()

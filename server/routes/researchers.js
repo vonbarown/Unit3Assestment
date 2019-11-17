@@ -95,7 +95,7 @@ router.post('/', queryCreateResearcher, sendPostResults);
 
 const patchResearcher = async (req, res, next) => {
     let name = req.body.researcherName;
-    let jobTitle = req.body.JobTitle;
+    let jobTitle = req.body.jobTitle;
     let id = req.params.id;
     try {
         req.patchResearcher = await db.any(`UPDATE researchers SET researcher_name = $/name/,
@@ -132,7 +132,7 @@ router.patch('/:id/patch', patchResearcher, sendPatchResults)
 const deleteResearcher = async (req, res, next) => {
     let id = req.params.id;
     try {
-        req.removeResearcher = await db.any(`DELETe FROM researchers WHERE id = $/id/  RETURNING *`, {
+        req.removeResearcher = await db.any(`DELETE FROM researchers WHERE id = $/id/  RETURNING *`, {
             id
         });
         next()

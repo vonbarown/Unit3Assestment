@@ -130,7 +130,7 @@ router.patch('/:id/patch', patchAnimal, sendPatchResults)
 const deleteAnimal = async (req, res, next) => {
     let id = req.params.id;
     try {
-        req.removeAnimal = await db.one(`DELETe FROM animals WHERE id = $/id/  RETURNING *`, {
+        req.removeAnimal = await db.one(`DELETE FROM animals WHERE id = $/id/  RETURNING *`, {
             id
         });
         next()
