@@ -11,7 +11,16 @@ app.use(express.urlencoded({
 app.use(express.json());
 
 const researcherRouter = require('./routes/researchers.js');
+const speciesRouter = require('./routes/species.js');
+const animalsRouter = require('./routes/animals.js');
+const habitatsRouter = require('./routes/habitats.js');
+const sightingsRouter = require('./routes/sightings.js');
+
 app.use('/researchers', researcherRouter);
+app.use('/species', speciesRouter);
+app.use('/animals', animalsRouter);
+app.use('/habitats', habitatsRouter);
+app.use('/sightings', sightingsRouter);
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}!`);
