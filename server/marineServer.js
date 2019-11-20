@@ -16,11 +16,11 @@ const animalsRouter = require('./routes/animals.js');
 const habitatsRouter = require('./routes/habitats.js');
 const sightingsRouter = require('./routes/sightings.js');
 
-app.use('/researchers', researcherRouter);
-app.use('/species', speciesRouter);
-app.use('/animals', animalsRouter);
-app.use('/habitats', habitatsRouter);
-app.use('/sightings', sightingsRouter);
+app.use('/marine', researcherRouter);
+app.use('/marine', speciesRouter);
+app.use('/marine', animalsRouter);
+app.use('/marine', habitatsRouter);
+app.use('/marine', sightingsRouter);
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}!`);

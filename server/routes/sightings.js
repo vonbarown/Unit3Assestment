@@ -5,7 +5,7 @@ const {
     db
 } = require('../../database/dbPromise.js')
 
-router.get('/', async (req, res) => {
+router.get('/sightings', async (req, res) => {
     let sightings;
     try {
         sightings = await db.any(`
@@ -89,7 +89,7 @@ const sendResults = (req, res) => {
 }
 
 //retrieving species sighting records by ids
-router.get('/species/:id', getSpeciesSightingsById, validateQuery, sendResults)
+router.get('/sightings/species/:id', getSpeciesSightingsById, validateQuery, sendResults)
 
 const getResearcherSightingsById = async (req, res, next) => {
     let id = req.params.id;
@@ -121,7 +121,7 @@ const getResearcherSightingsById = async (req, res, next) => {
     }
 }
 
-router.get('/researchers/:id', getResearcherSightingsById, validateQuery, sendResults);
+router.get('/sightings/researchers/:id', getResearcherSightingsById, validateQuery, sendResults);
 
 //get the 
 const getHabitatsSightingsById = async (req, res, next) => {
@@ -152,7 +152,7 @@ const getHabitatsSightingsById = async (req, res, next) => {
         });
     }
 }
-router.get('/habitats/:id', getHabitatsSightingsById, validateQuery, sendResults)
+router.get('/sightings/habitats/:id', getHabitatsSightingsById, validateQuery, sendResults)
 
 //query to record a new sighting
 const queryToRecordSighting = async (req, res, next) => {
@@ -195,7 +195,7 @@ const sendPostResults = (req, res) => {
     });
 }
 
-router.post('/', queryToRecordSighting, sendPostResults);
+router.post('/sightings', queryToRecordSighting, sendPostResults);
 
 //update sighting
 const updateSighting = async (req, res, next) => {
@@ -235,7 +235,7 @@ const sendPatchResults = (req, res) => {
     });
 }
 
-router.patch('/:id/patch', updateSighting, sendPatchResults)
+router.patch('/sightings/:id', updateSighting, sendPatchResults)
 
 //delete records of sightings
 const deleteSighting = async (req, res, next) => {
@@ -264,6 +264,6 @@ const sendDeleteResults = (req, res) => {
         payload: deleted,
     });
 }
-router.delete('/:id/delete', deleteSighting, sendDeleteResults)
+router.delete('/sightings/:id', deleteSighting, sendDeleteResults)
 
 module.exports = router;

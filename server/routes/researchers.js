@@ -5,7 +5,7 @@ const {
     db
 } = require('../../database/dbPromise.js')
 
-router.get('/', async (req, res) => {
+router.get('/researchers', async (req, res) => {
     let researchers;
     try {
         researchers = await db.any(`SELECT * FROM researchers`);
@@ -52,12 +52,12 @@ const sendResults = (req, res) => {
     });
 }
 
-router.get('/:id', getResearcherById, sendResults)
+router.get('/researchers/:id', getResearcherById, sendResults)
 
 //query to create new researcher
 const queryCreateResearcher = async (req, res, next) => {
-    let name = req.body.researcherName;
-    let jobTitle = req.body.JobTitle;
+    let name = req.body.researcher_name;
+    let jobTitle = req.body.job_title;
     try {
         let insertQuery = `
         INSERT INTO researchers (researcher_name, job_title)
@@ -91,14 +91,14 @@ const sendPostResults = (req, res) => {
     });
 }
 
-router.post('/', queryCreateResearcher, sendPostResults);
+router.post('/researchers', queryCreateResearcher, sendPostResults);
 
 const patchResearcher = async (req, res, next) => {
-    let name = req.body.researcherName;
-    let jobTitle = req.body.jobTitle;
+    let name = req.body.researcher_name;
+    let jobTitle = req.body.job_title;
     let id = req.params.id;
     try {
-        req.patchResearcher = await db.any(`UPDATE researchers SET researcher_name = $/name/,
+        req.patchResearcher = await db.one(`UPDATE researchers SET researcher_name = $/name/ OR
          job_title = $/jobTitle/ WHERE id = $/id/ RETURNING * `, {
             name,
             jobTitle,
@@ -127,7 +127,7 @@ const sendPatchResults = (req, res) => {
     });
 }
 
-router.patch('/:id/patch', patchResearcher, sendPatchResults)
+router.patch('/researchers/:id', patchResearcher, sendPatchResults)
 
 const deleteResearcher = async (req, res, next) => {
     let id = req.params.id;
@@ -155,6 +155,6 @@ const sendDeleteResults = (req, res) => {
         message: 'researcher removed from position',
     });
 }
-router.delete('/:id/delete', deleteResearcher, sendDeleteResults)
+router.delete('/researchers/:id', deleteResearcher, sendDeleteResults)
 
 module.exports = router;

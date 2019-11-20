@@ -23,7 +23,7 @@ CREATE TABLE species
 CREATE TABLE animals
 (
     id SERIAl PRIMARY KEY,
-    species_id INT NOT NULL REFERENCES species(id) ON UPDATE CASCADE,
+    species_id INT REFERENCES species(id) ON UPDATE CASCADE,
     nickname VARCHAR NOT NULL
 );
 
@@ -38,9 +38,9 @@ CREATE TABLE habitats
 CREATE TABLE sightings
 (
     id SERIAl PRIMARY KEY,
-    researcher_id INT NOT NULL REFERENCES researchers(id) ON DELETE SET NULL,
-    species_id INT NOT NULL REFERENCES species(id) ON DELETE CASCADE,
-    habitat_id INT NOT NULL REFERENCES habitats(id) ON UPDATE CASCADE
+    researcher_id INT REFERENCES researchers(id) ON DELETE SET NULL,
+    species_id INT REFERENCES species(id) ON DELETE CASCADE,
+    habitat_id INT REFERENCES habitats(id) ON UPDATE CASCADE
 );
 
 

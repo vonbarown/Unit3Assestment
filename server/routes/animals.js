@@ -5,7 +5,7 @@ const {
     db
 } = require('../../database/dbPromise.js')
 
-router.get('/', async (req, res) => {
+router.get('/animals', async (req, res) => {
     let animals;
     try {
         animals = await db.any(`SELECT * FROM animals`);
@@ -52,7 +52,7 @@ const sendResults = (req, res) => {
     });
 }
 
-router.get('/:id', getAnimalById, sendResults)
+router.get('/animals/:id', getAnimalById, sendResults)
 
 //query to add a new animal
 const queryToAddAnimal = async (req, res, next) => {
@@ -89,7 +89,7 @@ const sendPostResults = (req, res) => {
     });
 }
 
-router.post('/', queryToAddAnimal, sendPostResults);
+router.post('/animals', queryToAddAnimal, sendPostResults);
 
 //update animal
 const patchAnimal = async (req, res, next) => {
@@ -123,7 +123,7 @@ const sendPatchResults = (req, res) => {
     });
 }
 
-router.patch('/:id/patch', patchAnimal, sendPatchResults)
+router.patch('/animals/:id', patchAnimal, sendPatchResults)
 
 
 //delete animal
@@ -153,6 +153,6 @@ const sendDeleteResults = (req, res) => {
         payload: deleted,
     });
 }
-router.delete('/:id/delete', deleteAnimal, sendDeleteResults)
+router.delete('/animals/:id', deleteAnimal, sendDeleteResults)
 
 module.exports = router;

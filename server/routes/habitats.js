@@ -5,7 +5,7 @@ const {
     db
 } = require('../../database/dbPromise.js')
 
-router.get('/', async (req, res) => {
+router.get('/habitats', async (req, res) => {
     let habitats;
     try {
         habitats = await db.any(`SELECT * FROM habitats`);
@@ -53,7 +53,7 @@ const sendResults = (req, res) => {
     });
 }
 
-router.get('/:id', getHabitatsById, sendResults)
+router.get('/habitats/:id', getHabitatsById, sendResults)
 
 //query to create new habitat
 const queryAddNewHabitats = async (req, res, next) => {
@@ -91,6 +91,6 @@ const sendPostResults = (req, res) => {
     });
 }
 
-router.post('/', queryAddNewHabitats, sendPostResults);
+router.post('/habitats', queryAddNewHabitats, sendPostResults);
 
 module.exports = router;
