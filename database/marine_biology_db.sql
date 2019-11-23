@@ -16,7 +16,7 @@ CREATE TABLE researchers
 CREATE TABLE species
 (
     id SERIAl PRIMARY KEY,
-    species_name VARCHAR NOT NULL,
+    species_name VARCHAR NOT NULL UNIQUE,
     is_mammal BOOLEAN
 );
 
