@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express();
-const SightingsQuery = require('./sightingsQuery.js')
+const query = require('./sightingsQuery.js')
 
 const { db } = require("../../database/dbPromise.js");
 
@@ -35,11 +35,17 @@ router.get("/", async (req, res) => {
 
 //query to find species specific sightings
 const getSpeciesSightingsById = async (req, res, next) => {
+  console.log('hit');
+
   let id = req.params.id;
   try {
-    req.sightingsQuery = await SightingsQuery.getSightings();
+    req.sightings = await query.getSightings('species', id);
+    console.log(req.sightings);
+
     next();
   } catch (error) {
+    console.log(error);
+
     res.status(404);
     res.json({
       status: "error",
@@ -63,7 +69,7 @@ const validateQuery = (req, res, next) => {
 };
 
 const sendResults = (req, res) => {
-  let sighting = req.sightingsQuery;
+  let sighting = req.sightings;
   res.json({
     status: "Success",
     message: "retrieved single sighting",
@@ -75,9 +81,9 @@ const sendResults = (req, res) => {
 router.get("/species/:id", getSpeciesSightingsById, validateQuery, sendResults);
 
 const getResearcherSightingsById = async (req, res, next) => {
-  let id = req.body.id;
+  let id = req.params.id;
   try {
-    req.sightingsQuery = await SightingsQuery.getSightings();
+    req.sightings = await query.getSightings('researchers', id);
     next();
   } catch (error) {
     res.status(404);
@@ -100,7 +106,7 @@ router.get(
 const getHabitatsSightingsById = async (req, res, next) => {
   let id = req.params.id;
   try {
-    req.sightingsQuery = await SightingsQuery.getSightings('habitats', id);
+    req.sightings = await query.getSightings('habitats', id);
     next();
   } catch (error) {
     res.status(404);
@@ -160,75 +166,6 @@ const sendPostResults = (req, res) => {
 };
 
 router.post("/", queryToRecordSighting, sendPostResults);
-
-//update sighting
-const updateSighting = async (req, res, next) => {
-  let species_id = req.body.species_id;
-  let researcher_id = req.body.researcher_id;
-  let habitat_id = req.body.habitat_id;
-  let id = req.params.id;
-  try {
-    if (req.body.species_id, req.body.researcher_id, req.body.habitat_id) {
-      req.updateSighting = await db.one(
-        `UPDATE sightings SET researcher_id = $/researcherId/, species_id = $/speciesId/,
-                 habitat_id = $/habitatId/
-                 WHERE id = $/id/ RETURNING * `,
-        {
-          species_id,
-          researcher_id,
-          habitat_id,
-          id
-        }
-      );
-    } else if (req.body.species_id) {
-      req.updateSighting = await db.one(
-        `UPDATE sightings SET species_id = $/speciesId/ WHERE id = $/id/ RETURNING * `,
-        {
-          species_id,
-          id
-        }
-      );
-    } else if (req.body.researcher_id) {
-      req.updateSighting = await db.any(
-        `UPDATE sightings SET researcher_id = $/researcherId/ WHERE id = $/id/ RETURNING * `,
-        {
-          researcher_id,
-          id
-        }
-      );
-    } else if (req.body.habitat_id) {
-      req.updateSighting = await db.one(
-        `UPDATE sightings SET habitat_id = $/habitatId WHERE id = $/id/ RETURNING * `,
-        {
-          habitat_id,
-          id
-        }
-      );
-
-    }
-
-    next()
-  } catch (error) {
-    res.status(404);
-    res.json({
-      status: "error",
-      message: "no sighting recorded",
-      payload: null
-    });
-    console.log(error);
-  }
-};
-
-const sendPatchResults = (req, res) => {
-  let patch = req.updateSighting;
-  res.json({
-    status: "Success",
-    message: "records updated",
-    payload: patch
-  });
-};
-
-router.patch("/:id", updateSighting, sendPatchResults);
 
 //delete records of sightings
 const deleteSighting = async (req, res, next) => {

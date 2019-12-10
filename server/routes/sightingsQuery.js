@@ -14,10 +14,14 @@ const getSightings = async (param, id) => {
          INNER JOIN species ON species.id = sightings.species_id
          INNER JOIN habitats ON habitats.id = sightings.habitat_id
 
-         WHERE {param}= $/id/
- 
+         WHERE ${param}.id = $/id/
+
         `
-        const sightings = await db.any(sqlQuery, param, id)
+
+        console.log(sqlQuery);
+
+        const sightings = await db.any(sqlQuery, { id })
+
 
         return sightings
     } catch (error) {

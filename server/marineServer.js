@@ -18,6 +18,11 @@ const animalsRouter = require("./routes/animals.js");
 const habitatsRouter = require("./routes/habitats.js");
 const sightingsRouter = require("./routes/sightings.js");
 
+app.use((req, res, next) => {
+  console.log(req.method, req.path);
+  next();
+});
+
 app.use("/researchers", researcherRouter);
 app.use("/species", speciesRouter);
 app.use("/animals", animalsRouter);
