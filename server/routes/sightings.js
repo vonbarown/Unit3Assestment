@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express();
+const SightingsQuery = require('./sightingsQuery.js')
 
 const { db } = require("../../database/dbPromise.js");
 
@@ -36,25 +37,7 @@ router.get("/", async (req, res) => {
 const getSpeciesSightingsById = async (req, res, next) => {
   let id = req.params.id;
   try {
-    req.sightings = await db.any(
-      `
-         SELECT
-         sightings.researcher_id, researchers.researcher_name, researchers.job_title,
-             sightings.species_id, species.species_name, species.is_mammal,
-             sightings.habitat_id, habitats.category
-         FROM
-         sightings
-         INNER JOIN researchers ON researchers.id = sightings.researcher_id
-         INNER JOIN species ON species.id = sightings.species_id
-         INNER JOIN habitats ON habitats.id = sightings.habitat_id
-
-         WHERE species.id = $/id/
-
-        `,
-      {
-        id
-      }
-    );
+    req.sightingsQuery = await SightingsQuery.getSightings();
     next();
   } catch (error) {
     res.status(404);
@@ -80,7 +63,7 @@ const validateQuery = (req, res, next) => {
 };
 
 const sendResults = (req, res) => {
-  let sighting = req.sightings;
+  let sighting = req.sightingsQuery;
   res.json({
     status: "Success",
     message: "retrieved single sighting",
@@ -92,26 +75,9 @@ const sendResults = (req, res) => {
 router.get("/species/:id", getSpeciesSightingsById, validateQuery, sendResults);
 
 const getResearcherSightingsById = async (req, res, next) => {
-  let id = req.params.id;
+  let id = req.body.id;
   try {
-    req.sightings = await db.any(
-      `
-        SELECT
-            sightings.researcher_id, researchers.researcher_name, researchers.job_title,
-            sightings.species_id, species.species_name,species.is_mammal,
-            sightings.habitat_id, habitats.category
-        FROM 
-            sightings
-        INNER JOIN researchers ON researchers.id = sightings.researcher_id
-        INNER JOIN species ON species.id = sightings.species_id
-        INNER JOIN habitats ON habitats.id = sightings.habitat_id
-
-        WHERE researchers.id = $/id/
-    `,
-      {
-        id
-      }
-    );
+    req.sightingsQuery = await SightingsQuery.getSightings();
     next();
   } catch (error) {
     res.status(404);
@@ -134,24 +100,7 @@ router.get(
 const getHabitatsSightingsById = async (req, res, next) => {
   let id = req.params.id;
   try {
-    req.sightings = await db.any(
-      `
-         SELECT
-         sightings.researcher_id, researchers.researcher_name, researchers.job_title,
-             sightings.species_id, species.species_name, species.is_mammal,
-             sightings.habitat_id, habitats.category
-         FROM
-         sightings
-         INNER JOIN researchers ON researchers.id = sightings.researcher_id
-         INNER JOIN species ON species.id = sightings.species_id
-         INNER JOIN habitats ON habitats.id = sightings.habitat_id
-
-         WHERE habitats.id = $/id/
-        `,
-      {
-        id
-      }
-    );
+    req.sightingsQuery = await SightingsQuery.getSightings('habitats', id);
     next();
   } catch (error) {
     res.status(404);
@@ -214,67 +163,51 @@ router.post("/", queryToRecordSighting, sendPostResults);
 
 //update sighting
 const updateSighting = async (req, res, next) => {
-  let speciesId = req.body.species_id;
-  let researcherId = req.body.researcher_id;
-  let habitatId = req.body.habitat_id;
+  let species_id = req.body.species_id;
+  let researcher_id = req.body.researcher_id;
+  let habitat_id = req.body.habitat_id;
   let id = req.params.id;
   try {
-    // req.updateSighting = await db.one(`UPDATE sightings SET researcher_id = $/researcherId/, species_id = $/speciesId/,
-    //  habitat_id = $/habitatId/
-    //  WHERE id = $/id/ RETURNING * `, {
-    //     speciesId,
-    //     researcherId,
-    //     habitatId,
-    //     id
-    // });
-    // next()
-    switch (
-      (req.body.species_id, req.body.researcher_id, req.body.habitat_id)
-    ) {
-      case value:
-        req.updateSighting = await db.one(
-          `UPDATE sightings SET researcher_id = $/researcherId/, species_id = $/speciesId/,
+    if (req.body.species_id, req.body.researcher_id, req.body.habitat_id) {
+      req.updateSighting = await db.one(
+        `UPDATE sightings SET researcher_id = $/researcherId/, species_id = $/speciesId/,
                  habitat_id = $/habitatId/
                  WHERE id = $/id/ RETURNING * `,
-          {
-            speciesId,
-            researcherId,
-            habitatId,
-            id
-          }
-        );
-        break;
-      case req.body.species_id:
-        req.updateSighting = await db.one(
-          `UPDATE sightings SET species_id = $/speciesId/ WHERE id = $/id/ RETURNING * `,
-          {
-            speciesId,
-            id
-          }
-        );
-        break;
-      case req.body.researcher_id:
-        req.updateSighting = await db.any(
-          `UPDATE sightings SET researcher_id = $/researcherId/ WHERE id = $/id/ RETURNING * `,
-          {
-            researcherId,
-            id
-          }
-        );
-        break;
-      case req.body.habitat_id:
-        req.updateSighting = await db.one(
-          `UPDATE sightings SET habitat_id = $/habitatId WHERE id = $/id/ RETURNING * `,
-          {
-            habitatId,
-            id
-          }
-        );
-        break;
-      default:
-        next();
-        break;
+        {
+          species_id,
+          researcher_id,
+          habitat_id,
+          id
+        }
+      );
+    } else if (req.body.species_id) {
+      req.updateSighting = await db.one(
+        `UPDATE sightings SET species_id = $/speciesId/ WHERE id = $/id/ RETURNING * `,
+        {
+          species_id,
+          id
+        }
+      );
+    } else if (req.body.researcher_id) {
+      req.updateSighting = await db.any(
+        `UPDATE sightings SET researcher_id = $/researcherId/ WHERE id = $/id/ RETURNING * `,
+        {
+          researcher_id,
+          id
+        }
+      );
+    } else if (req.body.habitat_id) {
+      req.updateSighting = await db.one(
+        `UPDATE sightings SET habitat_id = $/habitatId WHERE id = $/id/ RETURNING * `,
+        {
+          habitat_id,
+          id
+        }
+      );
+
     }
+
+    next()
   } catch (error) {
     res.status(404);
     res.json({

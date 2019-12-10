@@ -55,16 +55,16 @@ router.get("/:id", getResearcherById, sendResults);
 
 //query to create new researcher
 const queryCreateResearcher = async (req, res, next) => {
-  let name = req.body.researcher_name;
-  let jobTitle = req.body.job_title;
+  let researcher_name = req.body.researcher_name;
+  let job_title = req.body.job_title;
   try {
     let insertQuery = `
         INSERT INTO researchers (researcher_name, job_title)
             VALUES($/name/, $/jobTitle/) RETURNING *`;
 
     req.newResearcher = await db.one(insertQuery, {
-      name,
-      jobTitle
+      researcher_name,
+      job_title
     });
     console.log(req.body);
     next();
@@ -92,8 +92,8 @@ const sendPostResults = (req, res) => {
 router.post("/", queryCreateResearcher, sendPostResults);
 
 const patchResearcher = async (req, res, next) => {
-  let name = req.body.researcher_name;
-  let jobTitle = req.body.job_title;
+  let researcher_name = req.body.researcher_name;
+  let job_title = req.body.job_title;
   let id = req.params.id;
   try {
     if (req.body.researcher_name && req.body.job_title) {
@@ -101,8 +101,8 @@ const patchResearcher = async (req, res, next) => {
         `UPDATE researchers SET researcher_name = $/name/,
          job_title = $/jobTitle/ WHERE id = $/id/ RETURNING *`,
         {
-          name,
-          jobTitle,
+          researcher_name,
+          job_title,
           id
         }
       );
@@ -110,7 +110,7 @@ const patchResearcher = async (req, res, next) => {
       req.patchResearcher = await db.any(
         `UPDATE researchers SET researcher_name = $/name/ WHERE id = $/id/ RETURNING *`,
         {
-          name,
+          researcher_name,
           id
         }
       );
@@ -118,7 +118,7 @@ const patchResearcher = async (req, res, next) => {
       req.patchResearcher = await db.any(
         `UPDATE researchers SET job_title = $/jobTitle/ WHERE id = $/id/ RETURNING *`,
         {
-          jobTitle,
+          job_title,
           id
         }
       );

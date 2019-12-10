@@ -41,11 +41,11 @@ const getHabitatsById = async (req, res, next) => {
 };
 
 const sendResults = (req, res) => {
-  let habitats = req.habitats;
+  let habitat = req.habitat;
   res.json({
     status: "Success",
     message: "retrieved single habitats",
-    payload: habitats
+    payload: habitat
   });
 };
 
