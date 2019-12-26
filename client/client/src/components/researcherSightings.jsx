@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import Display from './display'
 class ResearchersSightings extends Component {
     // Initialize the state
     constructor(props) {
@@ -49,20 +50,18 @@ class ResearchersSightings extends Component {
                 <h1>List of Researchers</h1>
                 <input type="number" placeholder='enter researcher id' onChange={this.handleInput} />
                 {/* Check to see if any items are found*/}
-                {list.length ? (
+                {list !== null ? (
                     <div>
                         {/* Render the list of items */}
                         {list.map((el) => {
                             return (
-                                <div key={el.researcher_id} className='display'>
-                                    Researcher Id:{el.researcher_id}{'  '}
-                                    Researcher name:{el.researcher_name}
-                                    Researcher title:{el.job_title}
-                                    Habitat Id:{el.habitat_id}
-                                    Species Name:{el.species_name}
-                                    {el.is_mammal}
-
-                                </div>
+                                <Display key={el.researcher_id}
+                                    researcher_id={el.researcher_id}
+                                    researcher_name={el.researcher_name}
+                                    job_title={el.job_title}
+                                    habitat_id={el.habitat_id}
+                                    species_name={el.species_name}
+                                />
                             );
                         })}
                     </div>
