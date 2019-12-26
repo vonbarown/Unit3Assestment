@@ -16,7 +16,6 @@ class Home extends Component {
     render() {
         return (
             <div className="Home">
-                <Link to={'../components/list'} />
                 <h1>Home is where the whale is</h1>
             </div>
         )
