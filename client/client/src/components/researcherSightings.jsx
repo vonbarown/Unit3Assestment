@@ -51,16 +51,18 @@ class ResearchersSightings extends Component {
                 <input type="number" placeholder='enter researcher id' onChange={this.handleInput} />
                 {/* Check to see if any items are found*/}
                 {list !== null ? (
-                    <div>
+                    <div className='container'>
+                        <br />
                         {/* Render the list of items */}
                         {list.map((el) => {
                             return (
-                                <Display key={el.researcher_id}
+                                <Display key={el.habitat_id}
                                     researcher_id={el.researcher_id}
                                     researcher_name={el.researcher_name}
                                     job_title={el.job_title}
                                     habitat_id={el.habitat_id}
                                     species_name={el.species_name}
+
                                 />
                             );
                         })}
