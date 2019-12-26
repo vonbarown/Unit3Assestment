@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route, Switch, Link } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home';
-import List from './components/list';
+import ResearchersSightings from './components/researcherSightings';
 
 class App extends Component {
   render() {
@@ -15,7 +15,7 @@ class App extends Component {
 
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route path='/list' component={List} />
+          <Route path='/list' component={ResearchersSightings} />
         </Switch>
       </div>
     );
