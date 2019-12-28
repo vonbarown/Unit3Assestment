@@ -3,14 +3,6 @@ import React, { Component } from 'react';
 // import BreedSelector from './BreedSelector'
 
 class Home extends Component {
-    constructor() {
-        super();
-        this.state = {
-            breed: ''
-        }
-    }
-
-
 
     render() {
         return (
